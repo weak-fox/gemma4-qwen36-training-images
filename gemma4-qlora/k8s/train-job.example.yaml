@@ -1,0 +1,64 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: gemma4-31b-qlora-train
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      runtimeClassName: nvidia
+      restartPolicy: Never
+      imagePullSecrets:
+        - name: sz-cogiot-registry
+      containers:
+        - name: trainer
+          image: sz.cogiot.com/id348504946c01000/gemma4-qlora-runtime-with-model:20260422-v2
+          imagePullPolicy: Always
+          env:
+            - name: APP_MODE
+              value: train
+            - name: UNSLOTH_VLLM_STANDBY
+              value: "0"
+            - name: PYTORCH_CUDA_ALLOC_CONF
+              value: expandable_segments:True
+            - name: PYTORCH_ALLOC_CONF
+              value: expandable_segments:True
+            - name: MODEL_NAME_OR_PATH
+              value: /opt/models/gemma-4-31b-it-unsloth-bnb-4bit
+            - name: MODEL_LOCAL_FILES_ONLY
+              value: "true"
+            - name: TRAIN_DATASET_URI
+              value: s3://llm-datasets/cogiot/cogiot_xiaoge_identity_seed.jsonl
+            - name: TRAIN_OUTPUT_DIR
+              value: /workspace/output/cogiot_xiaoge_identity_seed
+            - name: TRAIN_OUTPUT_URI
+              value: s3://llm-runs/gemma4/cogiot_xiaoge_identity_seed/run-001
+            - name: TRAIN_NUM_EPOCHS
+              value: "1"
+            - name: TRAIN_BATCH_SIZE
+              value: "1"
+            - name: TRAIN_GRAD_ACCUM_STEPS
+              value: "1"
+            - name: TRAIN_MAX_SEQ_LENGTH
+              value: "512"
+            - name: TRAIN_SAVE_STEPS
+              value: "20"
+            - name: TRAIN_SAVE_TOTAL_LIMIT
+              value: "2"
+            - name: TRAIN_SAVE_ADAPTER
+              value: "true"
+          envFrom:
+            - secretRef:
+                name: gemma4-minio
+          resources:
+            limits:
+              cpu: "2"
+              memory: 12Gi
+              nvidia.com/gpu: "2"
+            requests:
+              cpu: "1"
+              memory: 2Gi
+      # 如果要用不带模型的镜像：
+      # image: sz.cogiot.com/id348504946c01000/gemma4-qlora-train-nomodel:latest
+      # MODEL_NAME_OR_PATH=unsloth/gemma-4-31b-it-unsloth-bnb-4bit
+      # MODEL_LOCAL_FILES_ONLY=false

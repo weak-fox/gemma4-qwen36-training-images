@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gemma4-31b-qlora-serve
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gemma4-31b-qlora-serve
+  template:
+    metadata:
+      labels:
+        app: gemma4-31b-qlora-serve
+    spec:
+      runtimeClassName: nvidia
+      imagePullSecrets:
+        - name: sz-cogiot-registry
+      containers:
+        - name: server
+          image: sz.cogiot.com/id348504946c01000/gemma4-qlora-runtime-with-model:20260422-v2
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+              name: http
+          env:
+            - name: APP_MODE
+              value: serve
+            - name: UNSLOTH_VLLM_STANDBY
+              value: "0"
+            - name: PYTORCH_CUDA_ALLOC_CONF
+              value: expandable_segments:True
+            - name: PYTORCH_ALLOC_CONF
+              value: expandable_segments:True
+            - name: MODEL_NAME_OR_PATH
+              value: /opt/models/gemma-4-31b-it-unsloth-bnb-4bit
+            - name: SERVE_ARTIFACT_URI
+              value: s3://llm-runs/gemma4/cogiot_xiaoge_identity_seed/run-001
+            - name: SERVE_HOST
+              value: 0.0.0.0
+            - name: SERVE_PORT
+              value: "8000"
+            - name: SERVE_RESPONSE_MODEL_NAME
+              value: gemma4-31b-cogiot-xiaoge
+            - name: SERVE_MAX_NEW_TOKENS_DEFAULT
+              value: "256"
+            - name: SERVE_TEMPERATURE_DEFAULT
+              value: "0.2"
+            - name: SERVE_TOP_P_DEFAULT
+              value: "0.95"
+          envFrom:
+            - secretRef:
+                name: gemma4-minio
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 30
+          resources:
+            limits:
+              cpu: "2"
+              memory: 12Gi
+              nvidia.com/gpu: "2"
+            requests:
+              cpu: "1"
+              memory: 2Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gemma4-31b-qlora-serve
+spec:
+  selector:
+    app: gemma4-31b-qlora-serve
+  ports:
+    - name: http
+      port: 80
+      targetPort: http

@@ -1,0 +1,10 @@
+models/
+hf/
+runs/
+image-archives/
+.venv/
+.git/
+.cache/
+**/__pycache__/
+*.pyc
+.DS_Store

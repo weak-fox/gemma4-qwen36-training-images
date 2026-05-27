@@ -1,0 +1,95 @@
+# Python/cache
+**/__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# Local environments and secrets
+**/.venv/
+**/venv/
+**/env/
+**/.env
+**/.env.*
+!**/.env.example
+
+# OS/editor
+.DS_Store
+*.swp
+*.swo
+
+# Logs/runtime state
+*.log
+*.log.*
+*.pid
+logs/
+**/logs/
+.playwright-cli/
+**/.playwright-cli/
+
+# Model and Hugging Face caches
+models/
+**/models/
+hf/
+**/hf/
+.cache/
+**/.cache/
+local-serve-artifact/
+**/local-serve-artifact/
+unsloth_compiled_cache/
+**/unsloth_compiled_cache/
+
+# Training outputs
+runs/
+**/runs/
+checkpoints/
+**/checkpoints/
+checkpoint-*/
+**/checkpoint-*/
+outputs/
+**/outputs/
+wandb/
+**/wandb/
+mlruns/
+**/mlruns/
+
+# Model/data binary formats
+*.safetensors
+*.bin
+*.pt
+*.pth
+*.ckpt
+*.gguf
+*.onnx
+*.tflite
+*.npz
+*.npy
+*.parquet
+*.arrow
+
+# Docker/build archives
+image-archives/
+**/image-archives/
+*.docker.tar
+*.docker.tar.*
+*.tar
+*.tar.gz
+*.tgz
+*.tar.zst
+*.zst
+
+# Local sync/build scratch
+tmp_sync/
+**/tmp_sync/
+build/
+dist/
+tmp/
+temp/
+**/tmp/
+**/temp/
+
+# Malformed scratch artifact observed on the source host.
+*image*n*end*

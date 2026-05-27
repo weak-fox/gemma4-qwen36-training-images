@@ -1,0 +1,2 @@
+{"messages":[{"role":"user","content":[{"type":"text","text":"Write one short sentence saying hello to a developer."}]},{"role":"assistant","content":[{"type":"text","text":"Hello, developer, glad to work with you today."}]}]}
+{"messages":[{"role":"user","content":[{"type":"text","text":"Answer in one sentence: what is QLoRA used for?"}]},{"role":"assistant","content":[{"type":"text","text":"QLoRA is used to fine-tune large language models with low memory usage."}]}]}
